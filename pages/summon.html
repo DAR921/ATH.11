@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>استدعاء عسكري</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <nav class="page-nav">
+    <a href="military.html">رجوع</a>
+    <span>استدعاء عسكري</span>
+  </nav>
+
+  <main class="app-shell">
+    <section class="hero-panel" aria-label="استدعاء عسكري">
+      <div class="hero-content">
+        <p class="eyebrow">نموذج استدعاء</p>
+        <h1>استدعاء عسكري</h1>
+        <p class="hero-copy">تجهيز نص الاستدعاء العسكري ونسخه بسرعة من نموذج واحد.</p>
+      </div>
+      <div class="stats-grid">
+        <div><strong>2</strong><span>حقول</span></div>
+        <div><strong>1</strong><span>نموذج</span></div>
+        <div><strong>1</strong><span>روم متابعة</span></div>
+      </div>
+    </section>
+
+    <section class="simple-panel">
+      <form class="form-panel" autocomplete="off" onsubmit="copyMain(event)">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">بيانات الاستدعاء</p>
+            <h2>تفاصيل البرقية</h2>
+          </div>
+          <span class="status-pill ready">جاهز</span>
+        </div>
+        <div class="field-grid">
+          <label class="field">
+            <span>رقم البرقية</span>
+            <input id="num" placeholder="اكتب الرقم" />
+          </label>
+          <label class="field">
+            <span> كوبي يوزر العسكري</span>
+            <input id="discord" placeholder="123456789" />
+          </label>
+        </div>
+        <button class="wide-button" type="submit">نسخ الاستدعاء</button>
+      </form>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite">تم النسخ بنجاح</div>
+
+  <script>
+    const ROOM_LINK = "https://discord.com/channels/1404512396923375696/1445836423377846343";
+
+    function copyMain(event) {
+      event.preventDefault();
+      const num = document.getElementById("num").value;
+      const discord = document.getElementById("discord").value;
+      const text = `**برقية رقم : ${num}**
+
+**استدعاء العسكري المذكور أدناه :**
+
+<@${discord}>
+
+**بادر بالتواصل عبر روم :**
+
+${ROOM_LINK}
+
+**لديك مهلة ساعة خلاف ذلك يصدر الحكم فورا**`;
+      copyText(text);
+    }
+
+    async function copyText(text) {
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch (error) {
+        const area = document.createElement("textarea");
+        area.value = text;
+        document.body.appendChild(area);
+        area.select();
+        document.execCommand("copy");
+        area.remove();
+      }
+      const toast = document.getElementById("toast");
+      toast.classList.add("show");
+      window.setTimeout(() => toast.classList.remove("show"), 1600);
+    }
+  </script>
+</body>
+</html>

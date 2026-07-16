@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>الشؤون الإدارية</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <nav class="page-nav">
+    <a href="../index.html">رجوع</a>
+    <span>الشؤون الإدارية</span>
+  </nav>
+
+  <main class="app-shell">
+    <section class="hero-panel" aria-label="الشؤون الإدارية">
+      <div class="hero-content">
+        <p class="eyebrow">الإدارة</p>
+        <h1>الشؤون الإدارية</h1>
+        <p class="hero-copy">واجهة إدارية موحدة للإجازات والتقاعد والفصل والطلبات الداخلية.</p>
+      </div>
+      <div class="stats-grid">
+        <div><strong>4</strong><span>مسارات</span></div>
+        <div><strong>إداري</strong><span>تصنيف</span></div>
+        <div><strong>ATH</strong><span>نظام</span></div>
+      </div>
+    </section>
+
+    <section class="cards-grid" aria-label="خدمات الشؤون الإدارية">
+      <button class="action-card" type="button" onclick="go('leaves.html')">
+        <span class="module-kicker">إجازات</span>
+        <strong>إدارة الإجازات</strong>
+        <small>مسار مخصص لطلبات الإجازة ومتابعتها.</small>
+      </button>
+      <button class="action-card" type="button" onclick="go('resignation.html')">
+        <span class="module-kicker">استقالة</span>
+        <strong>طلبات الاستقالة</strong>
+        <small>تنظيم طلبات الاستقالة والإجراءات الإدارية.</small>
+      </button>
+      <button class="action-card" type="button">
+        <span class="module-kicker">فصل</span>
+        <strong>ملفات الفصل</strong>
+        <small>متابعة قرارات الفصل الإدارية.</small>
+      </button>
+    </section>
+  </main>
+
+  <script>
+    function go(page) {
+      window.location.href = page;
+    }
+  </script>
+</body>
+</html>

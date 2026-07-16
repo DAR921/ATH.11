@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>حكم فصل</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <nav class="page-nav">
+    <a href="military.html">رجوع</a>
+    <span>حكم فصل</span>
+  </nav>
+
+  <main class="app-shell">
+    <section class="hero-panel" aria-label="حكم فصل">
+      <div class="hero-content">
+        <p class="eyebrow">قرار عسكري</p>
+        <h1>حكم فصل</h1>
+        <p class="hero-copy">نموذج لإصدار قرار فصل عسكري بصيغة موحدة وجاهزة للنسخ.</p>
+      </div>
+      <div class="stats-grid">
+        <div><strong>5</strong><span>حقول</span></div>
+        <div><strong>1</strong><span>قرار</span></div>
+        <div><strong>نسخ</strong><span>فوري</span></div>
+      </div>
+    </section>
+
+    <section class="workspace">
+      <form class="form-panel" autocomplete="off" onsubmit="copyDismiss(event)">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">بيانات الفصل</p>
+            <h2>تفاصيل العسكري</h2>
+          </div>
+          <span class="status-pill">قرار حساس</span>
+        </div>
+        <div class="field-grid">
+          <label class="field"><span>رقم البرقية</span><input id="num" /></label>
+          <label class="field"><span>القائد ID</span><input id="leader" /></label>
+          <label class="field"><span>العسكري ID</span><input id="soldier" /></label>
+          <label class="field"><span>الرتبة</span><input id="rank" /></label>
+          <label class="field field-wide"><span>سبب الفصل</span><textarea id="reason"></textarea></label>
+        </div>
+        <button class="wide-button danger-button" type="submit">نسخ قرار الفصل</button>
+      </form>
+
+      <aside class="preview-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">تنبيه</p>
+            <h2>اعتماد القرار</h2>
+          </div>
+          <span class="status-pill">مراجعة</span>
+        </div>
+        <pre>تأكد من مراجعة البيانات قبل نسخ قرار الفصل.</pre>
+      </aside>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite">تم نسخ قرار الفصل بنجاح</div>
+
+  <script>
+    async function copyDismiss(event) {
+      event.preventDefault();
+      const text = `**برقية رقم : ${num.value}**
+
+**قرار فصل عسكري**
+
+**بأمر من معالي:**
+<@${leader.value}>
+
+**يتم فصل العسكري المذكور أدناه:**
+<@${soldier.value}>
+
+**الرتبة:**
+${rank.value}
+
+**سبب الفصل:**
+\`${reason.value}\`
+
+**يعتمد القرار ويتم اتخاذ اللازم حسب الأنظمة العسكرية.**`;
+
+      await copyToClipboard(text);
+      const toast = document.getElementById("toast");
+      toast.classList.add("show");
+      window.setTimeout(() => toast.classList.remove("show"), 1600);
+    }
+
+    async function copyToClipboard(text) {
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch (error) {
+        const area = document.createElement("textarea");
+        area.value = text;
+        document.body.appendChild(area);
+        area.select();
+        document.execCommand("copy");
+        area.remove();
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>إدارة الإجازات</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <nav class="page-nav">
+    <a href="admin.html">رجوع</a>
+    <span>إدارة الإجازات</span>
+  </nav>
+
+  <main class="app-shell">
+    <section class="hero-panel" aria-label="إدارة الإجازات">
+      <div class="hero-content">
+        <p class="eyebrow">الشؤون الإدارية</p>
+        <h1>إدارة الإجازات</h1>
+        <p class="hero-copy">نموذج لإصدار قرار قبول إجازة عسكرية بصيغة مكتب الشؤون الإدارية.</p>
+      </div>
+      <div class="stats-grid">
+        <div><strong>8</strong><span>حقول</span></div>
+        <div><strong>1</strong><span>قرار</span></div>
+        <div><strong>نسخ</strong><span>فوري</span></div>
+      </div>
+    </section>
+
+    <section class="workspace">
+      <form class="form-panel" autocomplete="off" onsubmit="copyLeave(event)">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">بيانات القرار</p>
+            <h2>تفاصيل الإجازة</h2>
+          </div>
+          <span class="status-pill ready">جاهز</span>
+        </div>
+
+        <div class="field-grid">
+          <label class="field">
+            <span>رقم القرار</span>
+            <input id="decisionNum" placeholder="مثال: 1024" />
+          </label>
+          <label class="field">
+            <span>العسكري</span>
+            <input id="soldier" placeholder="اسم أو منشن العسكري" />
+          </label>
+          <label class="field">
+            <span>نوع الإجازة</span>
+            <select id="leaveType">
+              <option value="اجازه خارجية">اجازه خارجية</option>
+              <option value="اجازه داخلية">اجازه داخلية</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>المدة</span>
+            <input id="duration" placeholder="مثال: 3" />
+          </label>
+          <label class="field" id="remainingBalanceField" hidden>
+            <span>الرصيد المتبقي</span>
+            <input id="remainingBalance" placeholder="مثال: 7 أيام" />
+          </label>
+          <label class="field">
+            <span>تاريخ البداية</span>
+            <input id="startDate" type="date" />
+          </label>
+          <label class="field">
+            <span>وقت البداية</span>
+            <input id="startTime" type="time" />
+          </label>
+          <label class="field">
+            <span>تاريخ العودة</span>
+            <input id="returnDate" type="date" />
+          </label>
+          <label class="field">
+            <span>وقت العودة</span>
+            <input id="returnTime" type="time" />
+          </label>
+        </div>
+
+        <button class="wide-button" type="submit">نسخ قرار الإجازة</button>
+      </form>
+
+      <aside class="preview-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">المعاينة</p>
+            <h2>صيغة القرار</h2>
+          </div>
+          <span class="status-pill ready">إداري</span>
+        </div>
+        <pre id="preview">املأ البيانات لعرض قرار الإجازة هنا.</pre>
+      </aside>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite">تم نسخ قرار الإجازة بنجاح</div>
+
+  <script>
+    const fields = ["decisionNum", "soldier", "leaveType", "duration", "remainingBalance", "startDate", "startTime", "returnDate", "returnTime"]
+      .reduce((items, id) => {
+        items[id] = document.getElementById(id);
+        return items;
+      }, {});
+
+    const remainingBalanceField = document.getElementById("remainingBalanceField");
+
+    function formatDate(value, fallback) {
+      return value ? value.split("-").join("/") : fallback;
+    }
+
+    function formatTime(value) {
+      if (!value) return "";
+      const [hour, minute] = value.split(":").map(Number);
+      const period = hour >= 12 ? "م" : "ص";
+      const hour12 = hour % 12 || 12;
+      return `${String(hour12).padStart(2, "0")}:${String(minute).padStart(2, "0")} ${period}`;
+    }
+
+    function buildLeaveText() {
+      const decisionNum = fields.decisionNum.value || "     ";
+      const soldier = fields.soldier.value || "";
+      const leaveType = fields.leaveType.value || "اجازه خارجية";
+      const duration = fields.duration.value || "";
+      const remainingBalance = fields.remainingBalance.value || "";
+      const startDate = formatDate(fields.startDate.value, "2026/000/00");
+      const startTime = formatTime(fields.startTime.value);
+      const returnDate = formatDate(fields.returnDate.value, "2026/00/00");
+      const returnTime = formatTime(fields.returnTime.value);
+      const balanceLine = leaveType === "اجازه داخلية" ? `\nالرصيد المتبقي  :  ${remainingBalance}\n` : "";
+      const startTimeText = startTime ? ` الساعة ${startTime}` : "";
+      const returnTimeText = returnTime ? ` الساعة ${returnTime}` : "";
+
+      return `﷽
+
+
+**قـرار صـادر من مـكتب الشـؤون الإداريـة رقـم  ( ${decisionNum} ) : **
+
+**ينـص علـى قبول اجازة العسـكري المحتـرم **:
+
+<@${soldier}>
+
+\`\`\`${leaveType}
+
+المدة  :  ${duration} ايام
+${balanceLine}
+
+تبدأ من تاريخ ${startDate}${startTimeText}
+
+تاريــخ  العـــودة  ${returnDate}${returnTimeText}
+
+———————————————————————————————————————
+\`\`\`
+ترسل تسخة للـ <@&1404535917724827758>  
+ 
+**توقيع**  :
+
+<@&1404535924372672633>   
+مـــديــر مـكـتـب <@&1404535917724827758>  
+<@1146563467688542218>  
+ 
+
+
+**اعـتـماد** :writing_hand_tone1: : 
+
+<@&1404535924469010482>  
+<@1139736525752516659>   
+
+<@&1404535924280529059>  
+<@852978992436740106>`;
+    }
+
+    function updatePreview() {
+      const isInternalLeave = fields.leaveType.value === "اجازه داخلية";
+      remainingBalanceField.hidden = !isInternalLeave;
+      if (!isInternalLeave) fields.remainingBalance.value = "";
+      document.getElementById("preview").textContent = buildLeaveText();
+    }
+
+    async function copyLeave(event) {
+      event.preventDefault();
+      await copyToClipboard(buildLeaveText());
+      const toast = document.getElementById("toast");
+      toast.classList.add("show");
+      window.setTimeout(() => toast.classList.remove("show"), 1600);
+    }
+
+    async function copyToClipboard(text) {
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch (error) {
+        const area = document.createElement("textarea");
+        area.value = text;
+        document.body.appendChild(area);
+        area.select();
+        document.execCommand("copy");
+        area.remove();
+      }
+    }
+
+    Object.values(fields).forEach((field) => {
+      field.addEventListener("input", updatePreview);
+      field.addEventListener("change", updatePreview);
+    });
+
+    updatePreview();
+  </script>
+</body>
+</html>

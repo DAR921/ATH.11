@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>طلبات الاستقالة</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <nav class="page-nav">
+    <a href="admin.html">رجوع</a>
+    <span>طلبات الاستقالة</span>
+  </nav>
+
+  <main class="app-shell">
+    <section class="hero-panel" aria-label="طلبات الاستقالة">
+      <div class="hero-content">
+        <p class="eyebrow">الشؤون الإدارية</p>
+        <h1>طلب استقالة</h1>
+        <p class="hero-copy">نموذج مخصص لتسجيل ومتابعة طلبات الاستقالة الإدارية.</p>
+      </div>
+      <div class="stats-grid">
+        <div><strong>5</strong><span>حقول</span></div>
+        <div><strong>1</strong><span>طلب</span></div>
+        <div><strong>سرعة</strong><span>تنفيذ</span></div>
+      </div>
+    </section>
+
+    <section class="workspace">
+      <form class="form-panel" autocomplete="off" onsubmit="submitResignation(event)">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">بيانات الطلب</p>
+            <h2>تفاصيل الاستقالة</h2>
+          </div>
+          <span class="status-pill ready">جاهز</span>
+        </div>
+
+        <div class="field-grid">
+          <label class="field">
+            <span>رقم الطلب</span>
+            <input id="requestNum" placeholder="مثال: 1452" />
+          </label>
+          <label class="field">
+            <span>رتبه العسكري</span>
+            <select id="rankTag1">
+              <option value="جندي">جندي</option>
+              <option value="جندي اول">جندي اول</option>
+              <option value="عريف">عريف</option>
+              <option value="وكيل رقيب">وكيل رقيب</option>
+              <option value="رقيب">رقيب</option>
+              <option value="رقيب اول">رقيب اول</option>
+              <option value="رئيس رقباء">رئيس رقباء</option>
+              <option value="ملازم">ملازم</option>
+              <option value="ملازم اول">ملازم اول</option>
+              <option value="نقيب">نقيب</option>
+              <option value="رائد">رائد</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>كوبي يوزر العسكري </span>
+            <input id="rankTag2" placeholder="مثال: <@624551455751143444>" />
+          </label>
+          <label class="field">
+            <span>الاسم و الرتبة</span>
+            <input id="soldierLabel" placeholder="مثال: [H-000] اسم العسكري " />
+          </label>
+        </div>
+
+        <button class="wide-button" type="submit">نسخ طلب الاستقالة</button>
+      </form>
+
+      <aside class="preview-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">المعاينة</p>
+            <h2>نص الطلب</h2>
+          </div>
+          <span class="status-pill ready">عرض</span>
+        </div>
+        <pre id="preview">املأ البيانات لعرض نص طلب الاستقالة هنا.</pre>
+      </aside>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite">تم نسخ نص طلب الاستقالة بنجاح!</div>
+
+  <script>
+    const rankMentions = {
+      "جندي": "<@&1404535919528120472>",
+      "جندي اول": "<@&1404535919444234331>",
+      "عريف": "<@&1404535919444361276>",
+      "وكيل رقيب": "<@&1404535919012352153>",
+      "رقيب": "<@&1404535919511601232>",
+      "رقيب اول": "<@&1404535920681553990>",
+      "رئيس رقباء": "<@&1404535920744595507>",
+      "ملازم": "<@&1404535920711045121>",
+      "ملازم اول": "<@&1404535920627028008>",
+      "نقيب": "<@&1404535921948233868>",
+      "رائد": "<@&1404535921927520296>"
+    };
+
+    const resignationFields = ["requestNum", "rankTag1", "rankTag2", "soldierLabel"]
+      .reduce((items, id) => {
+        items[id] = document.getElementById(id);
+        return items;
+      }, {});
+
+    function buildResignationText() {
+      const requestNum = resignationFields.requestNum.value || "1452";
+      const rankTag1 = rankMentions[resignationFields.rankTag1.value] || "<@&1404535920681553990>";
+      const rankTag2 = resignationFields.rankTag2.value || "<@ >";
+      const soldierLabel = resignationFields.soldierLabel.value || "[H-000] اسم العسكري";
+      const copyChannel = "<@&1404535917724827758>";
+
+      return `*** ﷽ ***
+
+**قـرار صـادر من مـكتب الشـؤون الإداريـة رقـم ( ${requestNum} ) : **
+
+**ينـص علـى قبول استقالة الـعـسـكـري المحتـرم بـرتـبـة :**  
+
+${rankTag1}
+
+<@${rankTag2}>
+
+** ${soldierLabel}**
+
+شكراً لما قدمته من جهود و تعب وعنا وفقك الله و نتمنى لك الخير و السعادة
+
+** ترسل نسخة للـ ${copyChannel}**
+
+توقيع :
+
+<@&1404535924469010482> 
+**مـــديــر مـكـتـب ${copyChannel}**
+
+ <@1146563467688542218> 
+
+**نــائـب مـديـر مـكـتـب ${copyChannel}**
+ 
+
+*** اعـتـماد ✍🏻 :***
+
+<@&1404535924469010482>
+<@1139736525752516659> 
+
+<@&1404535924280529059>
+<@852978992436740106>`;
+    }
+
+    function updatePreview() {
+      document.getElementById("preview").textContent = buildResignationText();
+    }
+
+    async function copyToClipboard(text) {
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch (error) {
+        const area = document.createElement("textarea");
+        area.value = text;
+        document.body.appendChild(area);
+        area.select();
+        document.execCommand("copy");
+        area.remove();
+      }
+    }
+
+    async function submitResignation(event) {
+      event.preventDefault();
+      const text = buildResignationText();
+      await copyToClipboard(text);
+      const toast = document.getElementById("toast");
+      if (toast) {
+        toast.classList.add("show");
+        window.setTimeout(() => toast.classList.remove("show"), 1600);
+      } else {
+        alert("تم نسخ نص الاستقالة بنجاح!");
+      }
+    }
+
+    Object.values(resignationFields).forEach((field) => {
+      field.addEventListener("input", updatePreview);
+      field.addEventListener("change", updatePreview);
+    });
+
+    updatePreview();
+  </script>
+</body>
+</html>

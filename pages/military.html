@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>الشرطة العسكرية</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <nav class="page-nav">
+    <a href="../index.html">رجوع</a>
+    <span>الشرطة العسكرية</span>
+  </nav>
+
+  <main class="app-shell">
+    <section class="hero-panel" aria-label="الشرطة العسكرية">
+      <div class="hero-content">
+        <p class="eyebrow">القسم الميداني</p>
+        <h1>الشرطة العسكرية</h1>
+        <p class="hero-copy">اختيار سريع لملفات التحقيق والاستدعاءات والقرارات العسكرية.</p>
+      </div>
+      <div class="stats-grid" aria-label="ملخص الخدمات">
+        <div><strong>5</strong><span>خدمات</span></div>
+        <div><strong>3</strong><span>نماذج نسخ</span></div>
+        <div><strong>1</strong><span>ملف تحقيق</span></div>
+      </div>
+    </section>
+
+    <section class="cards-grid" aria-label="خدمات الشرطة العسكرية">
+      <button class="action-card" type="button" onclick="go('investigation.html')">
+        <span class="module-kicker">تحقيق</span>
+        <strong>ملف تحقيق</strong>
+        <small>فتح ملف تحقيق عسكري وتجهيز التقرير.</small>
+      </button>
+
+      <button class="action-card" type="button" onclick="go('summon.html')">
+        <span class="module-kicker">استدعاء</span>
+        <strong>استدعاء عسكري</strong>
+        <small>إنشاء نص استدعاء مع رقم البرقية والمنشن.</small>
+      </button>
+
+      <button class="action-card" type="button" onclick="go('remove.html')">
+        <span class="module-kicker">قرار</span>
+        <strong>إسقاط حكم</strong>
+        <small>تجهيز قرار إسقاط حكم ونسخه.</small>
+      </button>
+
+      <button class="action-card" type="button" onclick="go('court.html')">
+        <span class="module-kicker">قضاء</span>
+        <strong>إصدار حكم</strong>
+        <small>إعداد صيغة حكم صادرة من مجلس القضاء.</small>
+      </button>
+
+      <button class="action-card" type="button" onclick="go('dismiss.html')">
+        <span class="module-kicker">فصل</span>
+        <strong>حكم فصل</strong>
+        <small>إصدار قرار فصل عسكري بصيغة جاهزة.</small>
+      </button>
+    </section>
+  </main>
+
+  <script>
+    function go(page) {
+      window.location.href = page;
+    }
+  </script>
+</body>
+</html>

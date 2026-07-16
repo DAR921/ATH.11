@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>نظام أمن المنشآت</title>
+  <link rel="stylesheet" href="pages/css/style.css" />
+</head>
+<body class="home-page">
+  <main class="app-shell">
+    <section class="hero-panel" aria-label="نظام أمن المنشآت">
+      <div class="hero-content">
+        <p class="eyebrow">بوابة أمن المنشآت</p>
+        <h1>نظام أمن المنشآت</h1>
+        <p class="hero-copy">واجهة موحدة للوصول إلى الشرطة العسكرية، الشؤون الإدارية، والأكاديمية العسكرية.</p>
+      </div>
+      <div class="stats-grid" aria-label="أقسام النظام">
+        <div><strong>3</strong><span>أقسام رئيسية</span></div>
+        <div><strong>0</strong><span>دخول محمي</span></div>
+        <div><strong>ATH</strong><span>بوابة موحدة</span></div>
+      </div>
+    </section>
+
+    <section class="home-workspace" aria-label="أقسام النظام">
+      <button class="module-card" type="button" onclick="go('pages/military.html')">
+        <span class="module-kicker">القسم الميداني</span>
+        <strong>الشرطة العسكرية</strong>
+        <small>استدعاءات، ملفات، إصدار حكم</small>
+      </button>
+
+      <button class="module-card" type="button" onclick="go('pages/admin.html')">
+        <span class="module-kicker">الإدارة</span>
+        <strong>الشؤون الإدارية</strong>
+        <small>إجازات، تقاعد، فصل</small>
+      </button>
+
+      <button class="module-card" type="button" onclick="go('pages/academy.html')">
+        <span class="module-kicker">التدريب</span>
+        <strong>الأكاديمية العسكرية</strong>
+        <small>دورات عسكرية</small>
+      </button>
+    </section>
+  </main>
+
+  <script>
+    function go(page) {
+      window.location.href = page;
+    }
+  </script>
+</body>
+</html>

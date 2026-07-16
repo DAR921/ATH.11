@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>إسقاط حكم</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <nav class="page-nav">
+    <a href="military.html">رجوع</a>
+    <span>إسقاط حكم</span>
+  </nav>
+
+  <main class="app-shell">
+    <section class="hero-panel" aria-label="إسقاط حكم">
+      <div class="hero-content">
+        <p class="eyebrow">مجلس القضاء العسكري</p>
+        <h1>إسقاط حكم</h1>
+        <p class="hero-copy">نموذج موحد لتجهيز قرار إسقاط الحكم ونسخه بصيغة جاهزة.</p>
+      </div>
+      <div class="stats-grid">
+        <div><strong>6</strong><span>حقول</span></div>
+        <div><strong>2</strong><span>نماذج جاهزة</span></div>
+        <div><strong>1</strong><span>قرار</span></div>
+      </div>
+    </section>
+
+    <section class="simple-panel">
+      <form class="form-panel" autocomplete="off" onsubmit="copyFull(event)">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">بيانات القرار</p>
+            <h2>تفاصيل الإسقاط</h2>
+          </div>
+          <span class="status-pill ready">جاهز</span>
+        </div>
+        <div class="field-grid">
+          <label class="field"><span>رقم البرقية</span><input id="num" /></label>
+          <label class="field"><span>القاضي ID</span><input id="judge" /></label>
+          <label class="field"><span>القائد ID</span><input id="leader" /></label>
+          <label class="field"><span>العسكري ID</span><input id="soldier" /></label>
+          <label class="field field-wide"><span>الحكم</span><textarea id="judgment"></textarea></label>
+          <label class="field field-wide"><span>رابط الحكم</span><input id="link" /></label>
+        </div>
+        <button class="wide-button" type="submit">نسخ القرار</button>
+      </form>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite">تم النسخ بنجاح</div>
+
+  <script>
+    function copyFull(event) {
+      event.preventDefault();
+      copyDecision(num.value, judge.value, leader.value, soldier.value, judgment.value, link.value);
+    }
+
+    async function copyDecision(num, judge, leader, soldier, judgment, link) {
+      const text = `**برقية رقم : ${num}**
+
+**بعد مراجعة الأنظمة والقوانين فقد أمرنا بما هو آت**
+
+**قرار إسقاط حكم صادر من قبل القاضي:**
+
+<@${judge}>
+
+**بأمر من معالي:**
+
+<@${leader}>
+
+**على العسكري المذكور أدناه:**
+
+<@${soldier}>
+
+**الحكم:**
+
+\`${judgment}\`
+
+**رابط الحكم:**
+
+(${link})
+
+**ترسل نسخة للجهات المختصة في رئاسة الشرطة العسكرية**`;
+
+      await copyToClipboard(text);
+      showToast();
+    }
+
+    async function copyToClipboard(text) {
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch (error) {
+        const area = document.createElement("textarea");
+        area.value = text;
+        document.body.appendChild(area);
+        area.select();
+        document.execCommand("copy");
+        area.remove();
+      }
+    }
+
+    function showToast() {
+      const toast = document.getElementById("toast");
+      toast.classList.add("show");
+      window.setTimeout(() => toast.classList.remove("show"), 1600);
+    }
+  </script>
+</body>
+</html>

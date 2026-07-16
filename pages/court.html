@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>إصدار حكم</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <nav class="page-nav">
+    <a href="military.html">رجوع</a>
+    <span>إصدار حكم</span>
+  </nav>
+
+  <main class="app-shell">
+    <section class="hero-panel" aria-label="إصدار حكم">
+      <div class="hero-content">
+        <p class="eyebrow">مجلس القضاء العسكري</p>
+        <h1>إصدار حكم</h1>
+        <p class="hero-copy">تجهيز صيغة حكم عسكري مع القاضي والقائد والعسكري ورابط القضية.</p>
+      </div>
+      <div class="stats-grid">
+        <div><strong>6</strong><span>حقول</span></div>
+        <div><strong>1</strong><span>صيغة</span></div>
+        <div><strong>نسخ</strong><span>فوري</span></div>
+      </div>
+    </section>
+
+    <section class="workspace">
+      <form class="form-panel" autocomplete="off" onsubmit="copyFull(event)">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">بيانات الحكم</p>
+            <h2>تفاصيل القرار</h2>
+          </div>
+          <span class="status-pill ready">جاهز</span>
+        </div>
+        <div class="field-grid">
+          <label class="field"><span>رقم البرقية</span><input id="num" placeholder="" /></label>
+          <label class="field"><span>ملف التحقيق</span><input id="fileNum" placeholder="" /></label>
+          <label class="field"><span>العسكري</span><input id="soldier" placeholder="" /></label>
+          <label class="field field-wide"><span>الحكم</span><textarea id="judgment" placeholder=""></textarea></label>
+          <label class="field field-wide"><span>السبب</span><textarea id="reason" placeholder=""></textarea></label>
+        </div>
+        <button class="wide-button" type="submit">نسخ الحكم</button>
+      </form>
+
+      <aside class="preview-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">المعاينة</p>
+            <h2>صيغة القرار</h2>
+          </div>
+          <span class="status-pill ready">حكم</span>
+        </div>
+        <pre id="preview">املأ البيانات ثم اضغط نسخ الحكم.</pre>
+      </aside>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite">تم نسخ الحكم بنجاح</div>
+
+  <script>
+    async function copyFull(event) {
+      event.preventDefault();
+      const text = `**﷽**
+
+**برقية رقم  : ${num.value}**
+
+**  قرار حكم صادر من :**
+
+<@&1404535916013555743>    
+
+**وبناء على ماورد في ملف التحقيق ${fileNum.value} **
+
+** على العسكري المذكور أدناه :**
+
+<@${soldier.value}>  
+       
+
+ ** وبعد ماتم مناقشته مع المجلس العسكري والقُضاه فقد تقرر على المُدين اعلاه بالحكم**
+ 
+**الحكم :**
+
+** \`${judgment.value}\`  **
+ 
+**السبب :**
+
+** \`${reason.value}\`  **
+
+**ترسل نسخة لـ**<@&1404535917724827758>  
+
+**رئاسة الشرطة العسكرية ** 
+ 
+  
+  <@725791545701433363>        
+
+<@&1404535924469010482>  
+
+<@1139736525752516659>   
+
+<@&1404535924280529059>  
+
+<@852978992436740106>`;
+
+      document.getElementById("preview").textContent = text;
+      await copyToClipboard(text);
+      const toast = document.getElementById("toast");
+      toast.classList.add("show");
+      window.setTimeout(() => toast.classList.remove("show"), 1600);
+    }
+
+    async function copyToClipboard(text) {
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch (error) {
+        const area = document.createElement("textarea");
+        area.value = text;
+        document.body.appendChild(area);
+        area.select();
+        document.execCommand("copy");
+        area.remove();
+      }
+    }
+  </script>
+</body>
+</html>

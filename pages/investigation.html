@@ -1,0 +1,136 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>نظام التحقيق العسكري</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <nav class="page-nav">
+    <a href="military.html">رجوع</a>
+    <span>نظام التحقيق العسكري</span>
+  </nav>
+
+  <main class="app-shell">
+    <section class="hero-panel" aria-label="نظام التحقيق العسكري">
+      <div class="hero-content">
+        <p class="eyebrow">نظام التحقيق العسكري</p>
+        <h1>فتح ملف تحقيق</h1>
+        <p class="hero-copy">نموذج سريع لتحديد التهمة، احتساب الحكم حسب الرتبة، وتجهيز التقرير للنسخ.</p>
+      </div>
+      <div class="stats-grid" aria-label="ملخص الأحكام">
+        <div><strong id="chargesCount">0</strong><span>بند محدث</span></div>
+        <div><strong>7</strong><span>درجات مخالفات</span></div>
+        <div><strong>12</strong><span>رتبة</span></div>
+      </div>
+    </section>
+
+    <section class="workspace">
+      <form id="investigationForm" class="form-panel" autocomplete="off">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">بيانات الملف</p>
+            <h2>تفاصيل التحقيق</h2>
+          </div>
+          <span class="status-pill" id="formStatus">غير مكتمل</span>
+        </div>
+
+        <div class="field-grid">
+          <label class="field">
+            <span>رقم الملف</span>
+            <input type="text" id="fileNum" placeholder="مثال: 1024" />
+          </label>
+          <label class="field">
+            <span>المحقق</span>
+            <input type="text" id="investigator" value="" />
+          </label>
+          <label class="field field-wide">
+            <span> كوبي يوزر العسكري  </span>
+            <input type="text" id="soldier" value="" />
+          </label>
+          <label class="field">
+            <span>الرتبة</span>
+            <select id="rank"></select>
+          </label>
+          <label class="field">
+            <span>درجة المخالفة</span>
+            <select id="gradeFilter"></select>
+          </label>
+          <label class="field field-wide">
+            <span>التهمة الموجهة</span>
+            <select id="chargeSelect"></select>
+          </label>
+          <label class="field field-wide" id="manualChargeField" hidden>
+            <span>التهمة يدوي</span>
+            <input type="text" id="manualCharge" placeholder="اكتب التهمة هنا" />
+          </label>
+          <label class="field field-wide verdict-field" id="manualVerdictField" hidden>
+            <span>الحكم اليدوي</span>
+            <input type="text" id="manualVerdict" placeholder="اكتب الحكم المناسب هنا" />
+          </label>
+          <label class="field">
+            <span>هل تم حضور الاستدعاء</span>
+            <select id="attended">
+              <option value="">اختر...</option>
+              <option value="نعم">نعم</option>
+              <option value="لا">لا</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>هل اتضح أنه مذنب</span>
+            <select id="guilty">
+              <option value="">اختر...</option>
+              <option value="نعم">نعم</option>
+              <option value="لا">لا</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>هل سبق وحصل على إنذار وظيفي</span>
+            <select id="warning">
+              <option value="">اختر...</option>
+              <option value="نعم">نعم</option>
+              <option value="لا">لا</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>تسلم إلى</span>
+            <select id="handover">
+              <option value="">اختر الجهة...</option>
+              <option value="احد اعضاء مجلس القضاء">اعضاء مجلس القضاء</option>
+              <option value="قيادة أمن المنشآت">قيادة أمن المنشآت</option>
+            </select>
+          </label>
+          <label class="field field-wide">
+            <span>دليل القضية</span>
+            <input type="text" id="evidence" placeholder="رابط أو وصف الدليل" />
+          </label>
+          <label class="field field-wide verdict-field">
+            <span>الحكم الأنسب</span>
+            <input type="text" id="verdict" readonly placeholder="يظهر بعد اختيار الرتبة والتهمة" />
+          </label>
+        </div>
+
+        <div class="action-row">
+          <button type="button" id="copyBtn" disabled>الرجاء تعبئة البيانات للنسخ</button>
+          <button type="reset" class="secondary-btn">تفريغ النموذج</button>
+        </div>
+      </form>
+
+      <aside class="preview-panel" aria-label="معاينة التقرير">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">المعاينة</p>
+            <h2>نص التقرير</h2>
+          </div>
+          <span class="status-pill ready" id="gradeBadge">بدون درجة</span>
+        </div>
+        <pre id="reportPreview">اختر البيانات لعرض التقرير هنا.</pre>
+      </aside>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite">تم نسخ التقرير بنجاح</div>
+  <script src="js/app.js"></script>
+</body>
+</html>
