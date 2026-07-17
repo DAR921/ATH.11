@@ -19,109 +19,506 @@
         <h1>إصدار حكم</h1>
         <p class="hero-copy">تجهيز صيغة حكم عسكري مع القاضي والقائد والعسكري ورابط القضية.</p>
       </div>
-      <div class="stats-grid">
-        <div><strong>6</strong><span>حقول</span></div>
+      <div class="stats-grid" aria-label="ملخص الأحكام">
+        <div><strong id="fieldsCount">0</strong><span>حقل مملوء</span></div>
         <div><strong>1</strong><span>صيغة</span></div>
         <div><strong>نسخ</strong><span>فوري</span></div>
       </div>
     </section>
 
     <section class="workspace">
-      <form class="form-panel" autocomplete="off" onsubmit="copyFull(event)">
+      <form id="courtForm" class="form-panel" autocomplete="off">
         <div class="panel-heading">
           <div>
             <p class="eyebrow">بيانات الحكم</p>
             <h2>تفاصيل القرار</h2>
           </div>
-          <span class="status-pill ready">جاهز</span>
+          <span class="status-pill" id="formStatus">غير مكتمل</span>
         </div>
+
         <div class="field-grid">
-          <label class="field"><span>رقم البرقية</span><input id="num" placeholder="" /></label>
-          <label class="field"><span>ملف التحقيق</span><input id="fileNum" placeholder="" /></label>
-          <label class="field"><span>العسكري</span><input id="soldier" placeholder="" /></label>
-          <label class="field field-wide"><span>الحكم</span><textarea id="judgment" placeholder=""></textarea></label>
-          <label class="field field-wide"><span>السبب</span><textarea id="reason" placeholder=""></textarea></label>
+          <label class="field">
+            <span>رقم البرقية</span>
+            <input type="text" id="num" placeholder="مثال: 2026/01" />
+          </label>
+          <label class="field">
+            <span>ملف التحقيق</span>
+            <input type="text" id="fileNum" placeholder="مثال: 1024" />
+          </label>
+          <label class="field">
+            <span>العسكري</span>
+            <input type="text" id="soldier" placeholder="اسم أو معرّف" />
+          </label>
+
+          <label class="field">
+            <span>قرار حكم صادر من</span>
+            <select id="issuer">
+              <option value="">اختر...</option>
+              <option value="مجلس قضاء|1527558954916384850" data-id="1404535918366556305">مجلس قضاء</option>
+              <option value="قائد قوات امن المنشات|1527551493828247704" data-id="1404535924469010482">قائد قوات امن المنشات</option>
+              <option value="نائب قائد قوات امن المنشات|1527578873074548850" data-id="1404535924280529059">نائب قائد قوات امن المنشات</option>
+              <option value="مساعد قائد امن المنشات|1527543309780779160" data-id="1404535924372672633">مساعد قائد امن المنشات</option>
+              <option value="نائب مساعد القائد|1527541010325049345" data-id="1404535924494438460">نائب مساعد القائد</option>
+              <option value="الشرطة العسكرية|1527541010325049345" data-id="1404535916013555743">الشرطة العسكرية</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>الرتبة</span>
+            <select id="rank"></select>
+          </label>
+
+          <label class="field">
+            <span>درجة المخالفة</span>
+            <select id="gradeFilter"></select>
+          </label>
+
+          <label class="field field-wide">
+            <span>السبب (التهمة)</span>
+            <select id="chargeSelect"></select>
+          </label>
+
+          <label class="field field-wide verdict-field">
+            <span>الحكم</span>
+            <input type="text" id="verdict" readonly placeholder="يتم حساب الحكم بعد اختيار الرتبة والسبب" />
+          </label>
+
+          <label class="field field-wide" id="manualChargeField" hidden>
+            <span>التهمة يدوي</span>
+            <input type="text" id="manualCharge" placeholder="اكتب التهمة هنا" />
+          </label>
+          <label class="field field-wide verdict-field" id="manualVerdictField" hidden>
+            <span>الحكم اليدوي</span>
+            <input type="text" id="manualVerdict" placeholder="اكتب الحكم المناسب هنا" />
+          </label>
         </div>
-        <button class="wide-button" type="submit">نسخ الحكم</button>
+
+        <div class="action-row">
+          <button type="button" id="copyBtn">نسخ الحكم</button>
+          <button type="reset" class="secondary-btn">تفريغ النموذج</button>
+        </div>
       </form>
 
-      <aside class="preview-panel">
+      <aside class="preview-panel" aria-label="معاينة القرار">
         <div class="panel-heading">
           <div>
             <p class="eyebrow">المعاينة</p>
             <h2>صيغة القرار</h2>
           </div>
-          <span class="status-pill ready">حكم</span>
+          <span class="status-pill ready" id="previewBadge">حكم</span>
         </div>
-        <pre id="preview">املأ البيانات ثم اضغط نسخ الحكم.</pre>
+        <pre id="preview">املأ البيانات لعرض صيغة الحكم هنا.</pre>
       </aside>
     </section>
   </main>
 
   <div class="toast" id="toast" role="status" aria-live="polite">تم نسخ الحكم بنجاح</div>
-
   <script>
-    async function copyFull(event) {
-      event.preventDefault();
-      const text = `**﷽**
+    // data copied from app.js (scoped for court page)
+    let ranks = [
+      "جندي",
+      "جندي اول",
+      "عريف + وكيل رقيب",
+      "رقيب + رقيب اول",
+      "رئيس رقباء",
+      "ملازم",
+      "ملازم اول",
+      "نقيب",
+      "رائد",
+      "مقدم ركن",
+      "عقيد ركن",
+      "عميد ركن"
+    ];
 
-**برقية رقم  : ${num.value}**
+    let penalties = {
+      "الدرجة الأولى": [
+        "شفهي أول + 150 الف",
+        "شفهي أول + 200 الف",
+        "شفهي أول + 250 الف",
+        "شفهي أول + 300 الف",
+        "شفهي اول + 300 الف",
+        "شفهي اول + 350 الف",
+        "شفهي اول + 350 الف",
+        "شفهي اول + 400 الف",
+        "شفهي ثاني + 500 الف",
+        "شفهي اخير + 600 الف",
+        "شفهي اخير + 700 الف",
+        "انذار وظيفي اول + مليون"
+      ],
+      "الدرجة الثانية": [
+        "شفهي أول + 250 الف",
+        "شفهي ثاني + 200 الف",
+        "شفهي ثاني + 300 الف",
+        "شفهي ثاني + 350 الف",
+        "شفهي ثاني + 400 الف",
+        "شفهي ثاني + 450 الف",
+        "شفهي ثاني + 450 الف",
+        "شفهي اثاني + 500 الف",
+        "شفهي اخير + مليون",
+        "وظيفي اول + غرامة مليون",
+        "وظيفي اول + غرامة مليون و 500 الف",
+        "وظيفي ثاني + غرامة 2 مليون"
+      ],
+      "الدرجة الثالثة": [
+        "شفهي اول + 300 الف",
+        "شفهي اخير + 350 الف",
+        "شفهي اخير + 350 الف",
+        "شفهي اخير + 400 الف",
+        "شفهي اخير + 450 الف",
+        "شفهي اخير + 500 الف",
+        "شفهي اخير + 600 الف",
+        "شفهي اخير + 600 الف",
+        "وظيفي اول + مليون",
+        "وظيفي اثاني + غرامة 2 مليون",
+        "وظيفي ثاني + غرامة 2 مليون",
+        "وظيفي ثالث + غرامة 2 مليون"
+      ],
+      "الدرجة الرابعة": [
+        "شفهي ثاني + 350 الف",
+        "شفهي اخير + 450 الف",
+        "انذار وظيفي اول + 450 الف",
+        "وظيفي اول + 500 الف",
+        "وظيفي اول + 500 الف",
+        "انذار وظيفي ثاني + مليون",
+        "انذار وظيفي ثاني + مليون",
+        "انذار وظيفي ثاني + مليون",
+        "غير محدد في ملف الأحكام",
+        "غير محدد في ملف الأحكام",
+        "غير محدد في ملف الأحكام",
+        "غير محدد في ملف الأحكام"
+      ],
+      "الدرجة الخامسة": [
+        "غير محدد في ملف الأحكام",
+        "فصل من الخدمة",
+        "انذار وظيفي ثاني + 500 الف",
+        "انذار وظيفي ثاني + 500 الف",
+        "انذار وظيفي ثاني + 500 الف",
+        "كسر رتبة بعد مراجعة المسؤولين",
+        "كسر رتبة بعد مراجعة المسؤولين",
+        "كسر رتبة بعد مراجعة المسؤولين",
+        "غير محدد في ملف الأحكام",
+        "غير محدد في ملف الأحكام",
+        "غير محدد في ملف الأحكام",
+        "غير محدد في ملف الأحكام"
+      ],
+      "الدرجة السادسة": [
+        "فصل من الخدمة",
+        "مراجعة المسؤولين",
+        "مراجعة المسؤولين",
+        "مراجعة المسؤولين",
+        "مراجعة المسؤولين",
+        "مراجعة المسؤولين",
+        "مراجعة المسؤولين",
+        "مراجعة المسؤولين",
+        "غير محدد في ملف الأحكام",
+        "غير محدد في ملف الأحكام",
+        "غير محدد في ملف الأحكام",
+        "غير محدد في ملف الأحكام"
+      ],
+      "الدرجة السابعة": [
+        "تقديرية تصل الى الفصل من الخدمة",
+        "تقديرية تصل الى الفصل من الخدمة",
+        "تقديرية تصل الى الفصل من الخدمة",
+        "تقديرية تصل الى الفصل من الخدمة",
+        "تقديرية تصل الى الفصل من الخدمة",
+        "تقديرية تصل الى الفصل من الخدمة",
+        "تقديرية تصل الى الفصل من الخدمة",
+        "تقديرية تصل الى الفصل من الخدمة",
+        "غير محدد في ملف الأحكام",
+        "غير محدد في ملف الأحكام",
+        "غير محدد في ملف الأحكام",
+        "غير محدد في ملف الأحكام"
+      ]
+    };
 
-**  قرار حكم صادر من :**
+    let charges = {
+      "الدرجة الأولى": [
+        "استيقاف مروري او التصدي للمجرمين بشكل خاطئ",
+        "مخالفة قوانين نقاط التفتيش",
+        "إبقاء المجرم في الدورية والتوجه لحالات أخرى",
+        "مخالفة قوانين الميدان بشكل عام",
+        "عدم تسليم الممنوعات",
+        "عدم تغيير المسمى الميداني",
+        "مخالفة قوانين الغفوة",
+        "دخول الميناء بالمركبة الشخصية",
+        "عدم",
+        "مخالفة قوانين المشتركه",
+        "تكرار التنويهات بالموجة لاكثر من 3 مرات خلال 5 دقائق",
+        "الوقوف بمواقف ليست مخصصة لرتبه",
+        "عدم ربط الفايف ام بالدسكورد",
+        "عدم رفع نداء استغاثة"
+      ],
+      "الدرجة الثانية": [
+        "تخطي المراجع",
+        "دخول موجات غير معتمدة",
+        "عدم التجاوب , إهمال التوجيهات في الراديو",
+        "عدم الإلتزام بالعهدة العسكرية",
+        "سجن شخص ( 20 شهر ) بدون اذن ضابط",
+        "عدم الاتزام بالمظهر العسكري حلاقة الشعر-الوشوم -الخ.",
+        "عدم الالتزام بالأنظمة المرورية",
+        "وضع حواجز او كشك بدون اذن",
+        "تكرير طلب رتبة عالية بلا مبرر مقنع",
+        "مخالفة قوانين تسجيل الدخول والخروج والبقاء في المركز",
+        "استخدام المنشن بشكل خاطئ",
+        "التأخر عن الاصطفاف",
+        "مخالفه قوانين السجلات الجنائيه",
+        "عدم الإلتزام ببرتوكولات الراديو",
+        "مخالفات غير مستحقه",
+        "مخالفة قوانين رسائل امن المنشات",
+        "ارسال نموذج خاطئ",
+        "مخالفه قوانين الفصل اثناء السيناريو",
+        "مخالفة قوانين الإعتقال أو التعامل مع المتهمين",
+        "الانسحاب قبل انتهاء الحاله",
+        "ادخال حمولة مخالفة",
+        "ادخال حموله غير واقعيه",
+        "مخالفه قوانين السجن ( سجن غير صحيح )",
+        "عدم الاتزام بالزي العسكري المحدد لرتبتك",
+        "التوجهه للمركز دون اذن",
+        "كشف هويه البحث الجنائي",
+        "التوجه دون اذن العمليات",
+        "عدم الالتزام بالاصطفاف العسكري"
+      ],
+      "الدرجة الثالثة": [
+        "عدم التقيد بقواعد المطارادات",
+        "سوء التعامل مع الحالات",
+        "مخالفة قوانين التوجه إلى الحالات",
+        "مخالفة تعاميم أو قوانين امن المننشات المحدثة",
+        "دخول موجه الرقابة دون اذن",
+        "التهرب من إستلام مركز العمليات او احد البوابات",
+        "مخالفه قوانين العمليات",
+        "التدخل في مهام أو صلاحيات الغير بأي شكل من الأشkال",
+        "تسجيل دخول لمباشرة حالة ثم تسجيل خروجه",
+        "إضافة شروط الهروب الأمن غيرر المحددة ضمن التعميمات",
+        "اطلاق النار بطريقه غير نظاميه",
+        "تحرير الرهائن بدون اذن او الفشل في تحريرها",
+        "مخالفه قوانين المركبات",
+        "الانسحاب من موقع التوجيه بدون اذن",
+        "عدم الإلتزام بضوابط التفاوض",
+        "مخالفة قوانين الاجازات",
+        "التقصير في العمل الأداري أو الميداني",
+        "استخدام سلاح الثقيل بشكل خاطئ",
+        "التقصير بمهام ضابط خفر",
+        "التهاون مع المجرم",
+        "مخالفة قوانين المصادرات بشكل كامل",
+        "تخريب سيناريو",
+        "اعطاء امر مخالف",
+        "مخالفة قوانين الدورات",
+        "استخدام المركبة كسلاح"
+      ],
 
-<@&1404535916013555743>    
+        "الدرجة الرابعة": [
+          "العبث بالعهدة العسكرية",
+          "عدم الجدية اثناء الدوام كعسكري",
+          "استخدام السلطة بغير حق",
+          "إهمال الرتب العليا للميدان",
+          "الاساءه لـ الشرطة العسكريه باي شكل من الاشكال",
+          "عدم احترام المواطنين",
+          "المناقشة أمام الأفراد",
+          "عدم احترام الافراد فيما بينهم",
+          "التأخر في فتح التوسعات",
+          "مجادلة ضابط"
+        ],
+        "الدرجة الخامسة": [
+          "الكذب على المسؤولين",
+          "مخالفة أمر مباشر او عدم انصياع لـ الأوامر",
+          "التلفظ على مواطن او الاساءه له باي شكل من الاشكال",
+          "مخالفة قوانين المصادرة سواء بالأخذ او بالتخزين",
+          "عدم تمثيل العسكرية بصورة صحيحة بأي شكل من الأشكال",
+          "استخدام السلطة او الوظيفه للمصلحه الشخصيه",
+          "الاساءه لقطاعات اخرى باي شكل من الاشكال",
+          "التلاعب بالساعات والتأفيك",
+          "استخدام السنايبر بشكل خاطئ",
+          "استخدام السلطة بطريقة مخالفة"
+        ],
+        "الدرجة السادسة": [
+          "الترصد لزملائك بغاية الحقد سواء بسبب او بغير سبب",
+          "عدم احترام الرتب العليا",
+          "تخريب برتبة عسكرية",
+          "الإساءة لامن المنشأت سواء خارج او داخل الرول بلاي أو بأي شكل من الأشكال",
+          "تسريب معلومات او نسخ جداول امن المنشأت و نقلها الى سيرفرات اخرى",
+          "عدم تنفيذ الجزاء الذي عليك",
+          "فساد عسكري"
+        ],
+        "الدرجة السابعة": [
+          "عدم تواجد لفترة طويلة",
+          "عدم الانصياع لاوامر القادة",
+          "التهرب الوظيفي",
+          "عدم تسديد الغرامات لاكثر من اسبوعين",
+          "التستر على امر مخالف باي شكل من الاشكال"
+        ]
+      };
 
-**وبناء على ماورد في ملف التحقيق ${fileNum.value} **
-
-** على العسكري المذكور أدناه :**
-
-<@${soldier.value}>  
-       
-
- ** وبعد ماتم مناقشته مع المجلس العسكري والقُضاه فقد تقرر على المُدين اعلاه بالحكم**
- 
-**الحكم :**
-
-** \`${judgment.value}\`  **
- 
-**السبب :**
-
-** \`${reason.value}\`  **
-
-**ترسل نسخة لـ**<@&1404535917724827758>  
-
-**رئاسة الشرطة العسكرية ** 
- 
-  
-  <@725791545701433363>        
-
-<@&1404535924469010482>  
-
-<@1139736525752516659>   
-
-<@&1404535924280529059>  
-
-<@852978992436740106>`;
-
-      document.getElementById("preview").textContent = text;
-      await copyToClipboard(text);
-      const toast = document.getElementById("toast");
-      toast.classList.add("show");
-      window.setTimeout(() => toast.classList.remove("show"), 1600);
-    }
-
-    async function copyToClipboard(text) {
+      // For correctness, reuse the full arrays from the main app.js by loading them programmatically.
+    // Since we cannot reliably import app.js (it expects other elements), we'll fetch it and eval only the constants.
+    (async function loadLists() {
       try {
-        await navigator.clipboard.writeText(text);
-      } catch (error) {
-        const area = document.createElement("textarea");
-        area.value = text;
-        document.body.appendChild(area);
-        area.select();
-        document.execCommand("copy");
-        area.remove();
+        const res = await fetch('js/app.js');
+        const text = await res.text();
+        // extract constants definitions for ranks, penalties, charges
+        const ranksMatch = text.match(/const ranks = \[([\s\S]*?)\];/m);
+        const penaltiesMatch = text.match(/const penalties = \{([\s\S]*?)\};/m);
+        const chargesMatch = text.match(/const charges = \{([\s\S]*?)\};/m);
+        if (ranksMatch && penaltiesMatch && chargesMatch) {
+          // eslint-disable-next-line no-eval
+          eval('ranks = [' + ranksMatch[1] + ']');
+          // eslint-disable-next-line no-eval
+          eval('penalties = {' + penaltiesMatch[1] + '}');
+          // eslint-disable-next-line no-eval
+          eval('charges = {' + chargesMatch[1] + '}');
+        }
+      } catch (e) {
+        // fallback: use the compressed placeholders above (these will be ignored if replaced)
+        console.warn('Could not load full lists from app.js, using embedded data.');
       }
-    }
+
+      // initialize selects
+      const el = {
+        rank: document.getElementById('rank'),
+        issuer: document.getElementById('issuer'),
+        gradeFilter: document.getElementById('gradeFilter'),
+        chargeSelect: document.getElementById('chargeSelect'),
+        manualCharge: document.getElementById('manualCharge'),
+        manualChargeField: document.getElementById('manualChargeField'),
+        manualVerdict: document.getElementById('manualVerdict'),
+        manualVerdictField: document.getElementById('manualVerdictField'),
+        verdict: document.getElementById('verdict')
+      };
+
+      function fillSelects() {
+        el.rank.innerHTML = '<option value="">اختر الرتبة...</option>';
+        ranks.forEach((r, i) => el.rank.add(new Option(r, String(i))));
+
+        el.gradeFilter.innerHTML = '<option value="all">كل الدرجات</option>';
+        Object.keys(charges).forEach((grade) => el.gradeFilter.add(new Option(grade, grade)));
+        renderCharges();
+      }
+
+      function renderCharges() {
+        const selectedGrade = el.gradeFilter.value || 'all';
+        const currentValue = el.chargeSelect.value;
+        el.chargeSelect.innerHTML = '<option value="">اختر التهمة...</option>';
+
+        const manualOption = new Option('يدوي', 'manual|manual');
+        el.chargeSelect.appendChild(manualOption);
+
+        Object.entries(charges).forEach(([grade, list]) => {
+          if (selectedGrade !== 'all' && selectedGrade !== grade) return;
+          const group = document.createElement('optgroup');
+          group.label = grade;
+          list.forEach((charge) => {
+            const option = new Option(charge, `${grade}|${charge}`);
+            group.appendChild(option);
+          });
+          el.chargeSelect.appendChild(group);
+        });
+
+        if ([...el.chargeSelect.options].some((o) => o.value === currentValue)) el.chargeSelect.value = currentValue;
+      }
+
+      function isManualCharge() { return el.chargeSelect.value === 'manual|manual'; }
+
+      function getSelectedCharge() {
+        const value = el.chargeSelect.value;
+        if (!value) return { grade: '', charge: '' };
+        if (value === 'manual|manual') return { grade: 'يدوي', charge: el.manualCharge.value.trim() };
+        const [grade, ...parts] = value.split('|');
+        return { grade, charge: parts.join('|') };
+      }
+
+      function calculateVerdict() {
+        const rankIndex = el.rank.value;
+        const manual = isManualCharge();
+        el.manualChargeField.style.display = manual ? 'grid' : 'none';
+        el.manualVerdictField.style.display = manual ? 'grid' : 'none';
+        el.verdict.readOnly = !manual;
+        if (manual) {
+          el.verdict.value = el.manualVerdict.value.trim();
+          return;
+        }
+        el.manualCharge.value = '';
+        el.manualVerdict.value = '';
+        const { grade } = getSelectedCharge();
+        el.verdict.value = rankIndex !== '' && grade ? (penalties[grade] && penalties[grade][Number(rankIndex)]) || 'غير محدد في ملف الأحكام' : '';
+      }
+
+      function buildText() {
+        const { charge } = getSelectedCharge();
+        const num = document.getElementById('num').value;
+        const file = document.getElementById('fileNum').value;
+        const soldierVal = document.getElementById('soldier').value;
+        const verdict = el.verdict.value;
+        const issuerSelect = document.getElementById('issuer');
+        const selectedOption = issuerSelect.options[issuerSelect.selectedIndex];
+        const issuerID = selectedOption.getAttribute('data-id') || '';
+        const issuerMention = issuerID ? `<@&${issuerID}>` : '';
+
+        return `**﷽**\n\n` +
+          `**برقية رقم  :${num}**\n\n` +
+          `**  قرار حكم صادر من :**\n\n` +
+          `${issuerMention} \n\n` +
+          `**وبناء على ماورد في ملف التحقيق ${file}**\n\n` +
+          `** على العسكري المذكور أدناه :**\n\n` +
+          `<@${soldierVal}> \n\n` +
+          ` ** وبعد ماتم مناقشته مع المجلس العسكري والقُضاه فقد تقرر على المُدين اعلاه بالحكم**\n \n` +
+          `**الحكم :**\n\n` +
+          `** \`${verdict} - تسلم الى احد اعضاء مجلس القضاء   \`  **\n \n` +
+          `**السبب :**\n\n` +
+          `** \`${charge}   \`  **\n\n` +
+          `**ترسل نسخة لـ**<@&1404535917724827758>  \n\n` +
+          `**رئاسة الشرطة العسكرية ** \n\n` +
+          `<@725791545701433363> \n\n` +
+          `<@&1404535924469010482>  \n\n` +
+          `<@1139736525752516659> \n\n` +
+          `<@&1404535924280529059>  \n\n` +
+          `<@852978992436740106>`;
+      }
+
+      const copyBtn = document.getElementById('copyBtn');
+      const preview = document.getElementById('preview');
+      const toast = document.getElementById('toast');
+
+      function isReady() {
+        const required = [ 'num','fileNum','soldier','issuer' ];
+        const basicFilled = required.every(id => document.getElementById(id).value.trim() !== '');
+        const chargeSelected = el.chargeSelect.value.trim() !== '';
+        const verdictFilled = el.verdict.value.trim() !== '';
+        if (isManualCharge()) {
+          return basicFilled && el.manualCharge.value.trim() !== '' && el.manualVerdict.value.trim() !== '';
+        }
+        return basicFilled && chargeSelected && verdictFilled;
+      }
+
+      function updateState() {
+        calculateVerdict();
+        const ready = isReady();
+        copyBtn.disabled = !ready;
+        document.getElementById('formStatus').textContent = ready ? 'مكتمل' : 'غير مكتمل';
+        document.getElementById('fieldsCount').textContent = ['num','fileNum','soldier','issuer','rank','chargeSelect','verdict'].filter(id => document.getElementById(id) && document.getElementById(id).value.trim() !== '').length;
+        if (ready) preview.textContent = buildText();
+      }
+
+      // event bindings
+      el.rank.addEventListener('input', updateState);
+      el.issuer.addEventListener('change', updateState);
+      el.gradeFilter.addEventListener('change', () => { renderCharges(); updateState(); });
+      el.chargeSelect.addEventListener('change', updateState);
+      el.manualCharge.addEventListener('input', updateState);
+      el.manualVerdict.addEventListener('input', updateState);
+
+      ['num','fileNum','soldier'].forEach(id => document.getElementById(id).addEventListener('input', updateState));
+
+      copyBtn.addEventListener('click', async () => {
+        const text = buildText();
+        preview.textContent = text;
+        try { await navigator.clipboard.writeText(text); } catch (e) { const area = document.createElement('textarea'); area.value = text; document.body.appendChild(area); area.select(); document.execCommand('copy'); area.remove(); }
+        toast.classList.add('show'); window.setTimeout(() => toast.classList.remove('show'), 1600);
+      });
+
+      document.getElementById('courtForm').addEventListener('reset', () => setTimeout(updateState,50));
+
+      fillSelects();
+      updateState();
+    })();
   </script>
 </body>
 </html>
