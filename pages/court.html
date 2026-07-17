@@ -39,15 +39,15 @@
         <div class="field-grid">
           <label class="field">
             <span>رقم البرقية</span>
-            <input type="text" id="num" placeholder="مثال: 2026/01" />
+            <input type="text" id="num" placeholder="" />
           </label>
           <label class="field">
-            <span>ملف التحقيق</span>
-            <input type="text" id="fileNum" placeholder="مثال: 1024" />
+            <span>ملف التحقيق <small>(اختياري)</small></span>
+            <input type="text" id="fileNum" placeholder="" />
           </label>
           <label class="field">
             <span>العسكري</span>
-            <input type="text" id="soldier" placeholder="اسم أو معرّف" />
+            <input type="text" id="soldier" placeholder="" />
           </label>
 
           <label class="field">
@@ -451,7 +451,7 @@
         const selectedOption = issuerSelect.options[issuerSelect.selectedIndex];
         const issuerID = selectedOption.getAttribute('data-id') || '';
         const issuerMention = issuerID ? `<@&${issuerID}>` : '';
-        const investigationLine = file.trim() ? `**وبناء على ماورد في ملف التحقيق ${file.trim()}**\n\n` : '';
+        const investigationLine = file.trim() ? `**  على ماورد في ملف التحقيق رقم :${file.trim()}**\n\n` : '';
 
         return `**﷽**\n\n` +
           `**برقية رقم  :${num}**\n\n` +
